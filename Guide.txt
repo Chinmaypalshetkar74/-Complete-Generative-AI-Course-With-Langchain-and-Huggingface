@@ -3,4 +3,4 @@
 Data_ingestion
 Data_transformation
 Embeddings
-Vectorscore
+Vectorstore
