@@ -1,0 +1,6 @@
+## project process step by step 
+
+Data_ingestion
+Data_transformation
+Embeddings
+Vectorscore
