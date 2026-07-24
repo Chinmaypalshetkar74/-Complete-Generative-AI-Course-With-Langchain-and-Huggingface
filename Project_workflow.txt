@@ -1,0 +1,123 @@
+==================================================================================================
+PHASE 1: INGESTION PIPELINE (Offline / Done Once)
+==================================================================================================
+[Data Sources] ──> [Data Chunking] ──> [Embedding Model] ──> [Vector Database]
+(PDFs, DBs, Web)    (Split text)         (Embedding Key)       (Stores Vectors + Metadata)
+
+==================================================================================================
+PHASE 2: INFERENCE PIPELINE (Online / Real-time User Interaction)
+==================================================================================================
+[User Chat UI] ──> [User Query] ──> [Embedding Model] ──> [Vector DB Search]
+                                      (Embedding Key)       (Finds Top K Chunks)
+                                                                 │
+┌────────────────────────────────────────────────────────────────┘
+▼
+[Prompt Orchestrator] ──> [System Instructions / Persona]
+(Combines Query + Context)
+       │
+       ▼
+[LLM Engine] (OpenAI / Anthropic via Model Key) ──> [Guardrails / Safety] ──> [User Response]
+
+
+
+
+
+================================================================================
+              GENERATIVE AI (RAG) ARCHITECTURE & WORKFLOW DIAGRAM
+================================================================================
+
+[PHASE 1: INGESTION PIPELINE (Offline Process)]
+────────────────────────────────────────────────────────────────────────────────
+ ┌──────────────┐      ┌───────────────┐      ┌─────────────────┐      ┌───────────┐
+ │ STEP 1:      │      │ STEP 2:       │      │ STEP 3:         │      │ STEP 4:   │
+ │ Raw Data     │ ───> │ Document      │ ───> │ Text Embedding  │ ───> │ Vector    │
+ │ Ingestion    │      │ Chunking      │      │ (Embedding Key) │      │ Storage   │
+ └──────────────┘      └───────────────┘      └─────────────────┘      └───────────┘
+   (PDFs, SQL,          (Break into            (Convert text to         (Save to KB 
+    Websites)            500 tokens)            math vectors)            Vector DB)
+
+
+[PHASE 2: INFERENCE PIPELINE (Real-Time User Chat)]
+────────────────────────────────────────────────────────────────────────────────
+ ┌──────────────┐      ┌───────────────┐      ┌─────────────────┐
+ │ STEP 5:      │      │ STEP 6:       │      │ STEP 7:         │
+ │ User Query   │ ───> │ Query Embed   │ ───> │ Semantic Search │ ──┐
+ │ (UI Input)   │      │ (EmbeddingKey)│      │ (Scan Vector DB)│   │
+ └──────────────┘      └───────────────┘      └─────────────────┘   │
+                                                                    │
+ ┌──────────────────────────────────────────────────────────────────┘
+ │
+ ▼
+ ┌──────────────┐      ┌───────────────┐      ┌─────────────────┐      ┌───────────┐
+ │ STEP 8:      │      │ STEP 9:       │      │ STEP 10:        │      │ Finished  │
+ │ Prompt Eng.  │ ───> │ LLM Generation│ ───> │ Guardrails &    │ ───> │ Response  │
+ │ Orchestrator │      │ (Model Key)   │      │ Safety Filters  │      │ (Chat UI) │
+ └──────────────┘      └───────────────┘      └─────────────────┘      └───────────┘
+   (Merge Query         (GPT-4o/Claude         (Data Leakage            (Streamed to
+   + Top Context)        reads & writes)        & Safety Check)          the User)
+
+
+================================================================================
+                     DETAILED STEP-BY-STEP WORKFLOW TEXT
+================================================================================
+
+PHASE 1: THE INGESTION PIPELINE (Building the Knowledge Base)
+--------------------------------------------------------------------------------
+* STEP 1: Data Ingestion
+  - System connects to raw data repositories.
+  - Extracts text from PDF manuals, internal Notion pages, and SQL databases.
+
+* STEP 2: Document Chunking
+  - Raw text is divided into smaller, structured text segments.
+  - Typically broken into 500-token paragraphs to respect LLM context limits.
+
+* STEP 3: Text Embedding
+  - Chunks are transmitted to an embedding model utilizing your Embedding Key.
+  - The model converts natural language strings into distinct coordinate vectors.
+
+* STEP 4: Vector Storage
+  - Generated vectors are stored inside a specialized, high-speed vector database.
+  - Raw text metadata is saved alongside vectors for future retrieval injection.
+
+
+PHASE 2: THE INFERENCE PIPELINE (Real-Time Runtime Loop)
+--------------------------------------------------------------------------------
+* STEP 5: User Query
+  - The end-user submits a functional query into the web or app frontend chat UI.
+  - Example: "Does our corporate health insurance policy cover dental work?"
+
+* STEP 6: Query Embedding
+  - The raw question string is sent to the identical embedding model system.
+  - Uses the same Embedding Key to map the question into a geometric vector.
+
+* STEP 7: Semantic Search
+  - The vector database benchmarks the query vector against stored data points.
+  - Extracts the top 3-5 most mathematically relevant context text chunks.
+
+* STEP 8: Prompt Engineering
+  - An application framework (LangChain/LlamaIndex) aggregates data components.
+  - Constructs a combined instruction frame: "You are an HR Assistant [Persona].
+    Answer 'Does our insurance cover dental?' [Query] using only: [Context Chunks]."
+
+* STEP 9: LLM Generation
+  - The final formatted prompt payload is dispatched to the chosen cloud LLM.
+  - Uses your Model Key to execute reasoning logic over the isolated text payload.
+
+* STEP 10: Guardrails & Delivery
+  - Output string undergoes secondary evaluation checks for PII leaks or safety.
+  - The clean token response streams line-by-line straight onto the chat UI screen.
+
+
+================================================================================
+                    PRODUCTION INFRASTRUCTURE REFEERENCE STACK
+================================================================================
+
+| Component           | Cloud Stack Option        | 100% Local / Private Stack |
+|---------------------|---------------------------|----------------------------|
+| Orchestration       | LangChain / LlamaIndex    | LangChain / Custom Python  |
+| Embedding Engine    | OpenAI text-embedding-3   | Ollama nomic-embed-text    |
+| Vector Database     | Pinecone / Qdrant Cloud   | ChromaDB / PGVector        |
+| Reasoning LLM       | OpenAI GPT-4o / Claude    | Ollama Llama 3.3 / DeepSeek|
+| Application Layer   | FastAPI + React Component | Streamlit / Chainlit App   |
+
+================================================================================
