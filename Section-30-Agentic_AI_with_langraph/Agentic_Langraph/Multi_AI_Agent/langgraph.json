@@ -1,0 +1,10 @@
+{
+    "dependencies":["."],
+    "graphs":{
+        "tool_agent":"./mult.py:graph"
+    },
+    "env":"../.env"
+}
+
+
+
